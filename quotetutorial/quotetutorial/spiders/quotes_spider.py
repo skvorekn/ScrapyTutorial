@@ -1,4 +1,5 @@
 import scrapy
+from ..items import QuotetutorialItem
 
 class QuoteSpider(scrapy.Spider):
     # expects these two variables
@@ -10,6 +11,10 @@ class QuoteSpider(scrapy.Spider):
     # method
     # response will be the source code of the start_url
     def parse(self, response):
+
+        # instance variable
+        items = QuotetutorialItem()
+
         # don't return title tag (css condition)
         # css selector
         # title = response.css('title::text').extract()
@@ -27,12 +32,12 @@ class QuoteSpider(scrapy.Spider):
             title = quote.css('span.text::text').extract()
             author = quote.css('.author::text').extract()
             tag = quote.css('.tag::text').extract()
-            # always yield a dictionary
-            yield {
-                'title' : title,
-                'author' : author,
-                'tag' : tag
-            }
+
+            items['title'] = title
+            items['author'] = author
+            items['tag'] = tag
+
+            yield items
 
 
 # notes
@@ -42,4 +47,9 @@ class QuoteSpider(scrapy.Spider):
 # combine css selector and xpath selector to give condition to extract data
 # response.css("li.next a").xpath("@href").extract()
 
+# video 11: put into items/containers rather than a database directly
+# issue with database:
+# issue with dictionaries: lacks structure so move to temporary location (container/items) then to database
+# use items.py
 
+# scrapy crawl quotes -o items.json
